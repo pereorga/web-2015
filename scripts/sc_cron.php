@@ -101,6 +101,9 @@ class SC_Cron
                 case 'osmand':
                     $this->update_osmad();
                     break;
+                case 'tor':
+                    $this->update_tor();
+                    break;
                 case 'all':
                     $this->update_mozilla();
                     $this->update_libreoffice();
@@ -304,6 +307,54 @@ class SC_Cron
         return round(pow(1024, $base - floor($base)), $precision) .' '. $suffixes[floor($base)];
     }
 
+    /**
+     * Updates TOR browser
+     */
+    private function update_tor() {
+        if ( $post = get_page_by_path( 'navegador-tor' , OBJECT, 'programa' ) ) {
+            $version_info = $this->process_tor_json_info();
+            $field_key = $this->acf_get_field_key("baixada", $post->ID);
+
+            update_field( $field_key, $version_info, $post->ID );
+        }
+    }
+
+    /**
+     * Process the json information coming from an url
+     */
+    private function process_tor_json_info()
+    {
+        $json = json_decode( do_json_api_call( 'https://aus1.torproject.org/torbrowser/update_3/release/downloads.json' ));
+        $version = $json->version;
+
+        $variants = array(
+            'windows' => array(
+                'x86' => 'win32',
+                'x86_64' => 'win64'
+            ),
+            'osx' => array (
+                'x86' => 'osx64',
+            ),
+            'linux' => array(
+                'x86' => 'linux32',
+                'x86_64' => 'linux64'
+            )
+        );
+
+        foreach($variants as $os_wp => $builds) {
+            foreach( $builds as $arch_wp => $build ) {
+                $download_url = $json->downloads->{$build}->ca->binary;
+
+                $version_info[$os_wp.$arch_wp]['download_url'] = $download_url;
+                $version_info[$os_wp.$arch_wp]['download_version'] = $version;
+                $version_info[$os_wp.$arch_wp]['download_size'] = '';
+                $version_info[$os_wp.$arch_wp]['arquitectura'] = $arch_wp;
+                $version_info[$os_wp.$arch_wp]['download_os'] = $os_wp;
+            }
+        }
+
+        return $version_info;
+    }
 
     /**
      * Updates Mozilla programs
