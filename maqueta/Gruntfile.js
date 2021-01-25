@@ -10,13 +10,13 @@ module.exports = function(grunt) {
               compress: true,  //minifying the result
               // LESS source map
               // Enable source maps. (To enable, set sourceMap to true and update sourceMapRootpath based on your install)
-              sourceMap: true,
+              sourceMap: false,
               // Write the source map to a separate file with the given filename.
-              sourceMapFilename: './public/dist/css/main.min.css.map', // where file is generated and located
+              // sourceMapFilename: './public/dist/css/main.min.css.map', // where file is generated and located
               // Override the default URL that points to the source map from the compiled CSS file.
-              sourceMapURL: '../../../public/dist/css/main.min.css.map', // (the complete url and filename put in the compiled css file.)
+              // sourceMapURL: './main.min.css.map', // (the complete url and filename put in the compiled css file.)
               // Adds this path onto the less file paths in the source map.
-              sourceMapRootpath: '../../../app/'
+              // sourceMapRootpath: '../../../app/'
             },
             files: {
               //compiling main.less into main.min.css
